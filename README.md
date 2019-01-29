@@ -58,7 +58,7 @@ Finally, add the following features using implicit intents:
 
 ## Submission
 
-As usual, we'll be using GitHub Classroom for this assignment, and you will submit your assignment via GitHub.  Make sure your completed files are committed and pushed by the assignment's deadline to the master branch of the GitHub repo that was created for you by GitHub Classroom.  A good way to check whether your files are safely submitted is to look at the master branch your assignment repo on the github.com website (i.e. https://github.com/OSU-CS492-W18/assignment-2-YourGitHubUsername/). If your changes show up there, you can consider your files submitted.
+As usual, we'll be using GitHub Classroom for this assignment, and you will submit your assignment via GitHub.  Make sure your completed files are committed and pushed by the assignment's deadline to the master branch of the GitHub repo that was created for you by GitHub Classroom.  A good way to check whether your files are safely submitted is to look at the master branch your assignment repo on the github.com website (i.e. https://github.com/OSU-CS492-W19/assignment-2-YourGitHubUsername/). If your changes show up there, you can consider your files submitted.
 
 ## Grading criteria
 

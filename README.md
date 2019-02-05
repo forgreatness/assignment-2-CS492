@@ -56,6 +56,16 @@ Finally, add the following features using implicit intents:
 
   2. Add an action to the action bar of the "detailed" forecast activity that allows the user to share the "detailed" forecast text.  Use the `ShareCompat` class's `IntentBuilder` to create an implicit intent to accomplish this.
 
+## Extra credit
+
+You might have noticed that, in the JSON response from OpenWeatherMap, the `weather` field of each object in `list` contains a field named `icon`.  The value of this field is the code for a weather icon that would be appropriate to display alongside the corresponding forecast.  Each code can be converted into a URL from which the icon image can be fetched, as described here: https://openweathermap.org/weather-conditions.  For example, here's the URL for a sunny weather icon:
+
+http://openweathermap.org/img/w/01d.png
+
+For up to 10 points of extra credit, you should display the weather icon associated with each forecast item in both the `RecyclerView` element for that item and the detail view activity for that item.  You should do this in an aesthetically pleasing way.  In other words, think carefully about how you'll incorporate the icon into the layouts for the list element and the detail view activity.
+
+Note that displaying images based on a URL is not a trivial task.  The Glide library is one option to make it a little easier: https://github.com/bumptech/glide.  Feel free to use Glide or another library for this task.
+
 ## Submission
 
 As usual, we'll be using GitHub Classroom for this assignment, and you will submit your assignment via GitHub.  Make sure your completed files are committed and pushed by the assignment's deadline to the master branch of the GitHub repo that was created for you by GitHub Classroom.  A good way to check whether your files are safely submitted is to look at the master branch your assignment repo on the github.com website (i.e. https://github.com/OSU-CS492-W19/assignment-2-YourGitHubUsername/). If your changes show up there, you can consider your files submitted.
@@ -71,3 +81,6 @@ This assignment is worth 100 total points, broken down as follows:
   * 20 points: The app uses implicit intents to launch other activities:
     * 10 points: The app includes an action in the main activity's action bar to allow the user to see the forecast location in a map
     * 10 points: The app includes an action in the "detailed" forecast activity's action bar to allow the user to share the text of the "detailed" forecast
+
+  * Extra credit:
+    * 10 points: The app displays the appropriate weather icon for each forecast item in both the forecast list and the detail view activity

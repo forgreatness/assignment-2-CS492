@@ -53,7 +53,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     public interface OnForecastItemClickListener {
-        void onForecastItemClick(String detailedForecast);
+        void onForecastItemClick(String detailedForecast, String forecastIcon);
     }
 
     class ForecastItemViewHolder extends RecyclerView.ViewHolder {
@@ -72,7 +72,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 public void onClick(View v) {
                     String forecast = mForecastData.get(getAdapterPosition());
                     String forecastIcon = mForecastIcons.get(getAdapterPosition());
-                    mOnForecastItemClickListener.onForecastItemClick(forecast);
+                    mOnForecastItemClickListener.onForecastItemClick(forecast, forecastIcon);
                 }
             });
         }

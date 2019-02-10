@@ -3,6 +3,7 @@ package com.example.android.connectedweather;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Debug;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ public class ForecastDetail extends AppCompatActivity {
     private ImageView mForecastIconIV;
     private String mForecast;
     private String mForecastIcon;
-    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,14 +27,14 @@ public class ForecastDetail extends AppCompatActivity {
 
         mDetailForecastTV = findViewById(R.id.tv_detail_forecast);
         mForecastIconIV = findViewById(R.id.iv_forecast_icon);
-        context = this.context;
 
         Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST)){
-            mForecast = (String) intent.getSerializableExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST);
-            //mForecastIcon = (String) intent.getSerializableExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST_ICON);
+        if(intent != null && intent.getExtras() != null){
+            Bundle extras = intent.getExtras();
+            mForecast = extras.getString(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST);
+            mForecastIcon = extras.getString(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST_ICON);
             mDetailForecastTV.setText(mForecast);
-            //Glide.with(context).load("https://openweathermap.org/img/w/"+mForecastIcon+".png").into(mForecastIconIV);
+            Glide.with(getBaseContext()).load("https://openweathermap.org/img/w/"+mForecastIcon+".png").into(mForecastIconIV);
         }
     }
 

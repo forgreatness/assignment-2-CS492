@@ -86,10 +86,12 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     @Override
-    public void onForecastItemClick(String detailedForecast) {
+    public void onForecastItemClick(String detailedForecast, String forecastIcon) {
         Intent intent = new Intent(this, ForecastDetail.class);
-        intent.putExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST, detailedForecast);
-        //intent.putExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST_ICON, forecastIcon);
+        Bundle extras = new Bundle();
+        extras.putString(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST, detailedForecast);
+        extras.putString(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST_ICON, forecastIcon);
+        intent.putExtras(extras);
         startActivity(intent);
     }
 

@@ -1,19 +1,33 @@
 package com.example.android.connectedweather;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.OnForecastItemClickListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mForecastListRV;
     private ForecastAdapter mForecastAdapter;
-    private Toast mToast;
+    private TextView mLoadingErrorTV;
+    private ProgressBar mLoadingPB;
 
     private static final String[] dummyForecastData = {
             "Sunny and Warm - 75F",
@@ -52,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mForecastListRV = (RecyclerView)findViewById(R.id.rv_forecast_list);
+        mForecastListRV = findViewById(R.id.rv_forecast_list);
+        mLoadingErrorTV = findViewById(R.id.tv_loading_error);
+        mLoadingPB = findViewById(R.id.pb_loading);
 
         mForecastListRV.setLayoutManager(new LinearLayoutManager(this));
         mForecastListRV.setHasFixedSize(true);
@@ -60,18 +76,95 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         mForecastAdapter = new ForecastAdapter(this);
         mForecastListRV.setAdapter(mForecastAdapter);
 
-        mForecastAdapter.updateForecastData(
-                new ArrayList<String>(Arrays.asList(dummyForecastData)),
-                new ArrayList<String>(Arrays.asList(dummyDetailedForecastData))
-        );
+        doOpenWeatherAPISearch();
+    }
+
+    private void doOpenWeatherAPISearch() {
+        String url = OpenWeatherAPIUtils.buildOpenWeatherAPISearchURL();
+        Log.d(TAG, "Querying For Forecast: " + url);
+        new OpenWeatherAPISearchTask().execute(url);
     }
 
     @Override
     public void onForecastItemClick(String detailedForecast) {
-        if (mToast != null) {
-            mToast.cancel();
+        Intent intent = new Intent(this, ForecastDetail.class);
+        intent.putExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST, detailedForecast);
+        //intent.putExtra(OpenWeatherAPIUtils.OPEN_WEATHER_API_FORECAST_ICON, forecastIcon);
+        startActivity(intent);
+    }
+
+    class OpenWeatherAPISearchTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingPB.setVisibility(View.VISIBLE);
         }
-        mToast = Toast.makeText(this, detailedForecast, Toast.LENGTH_LONG);
-        mToast.show();
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String url = urls[0];
+            String results = null;
+            try {
+                results = NetworkUtils.doHTTPGet(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s != null) {
+                mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                mForecastListRV.setVisibility(View.VISIBLE);
+                OpenWeatherAPIUtils.Forecast[] forecasts = OpenWeatherAPIUtils.parseOpenWeatherAPISearchResults(s);
+                ArrayList<String> results = new ArrayList<String>();
+                ArrayList<String> icons = new ArrayList<String>();
+                for (OpenWeatherAPIUtils.Forecast forecast : forecasts) {
+                    String delimiter = " - ";
+                    String icon = "";
+                    String result = forecast.dt_txt + delimiter;
+                    for (OpenWeatherAPIUtils.Description description : forecast.weather) {
+                        icon = description.icon;
+                        result = result + description.main + delimiter;
+                    }
+                    result = result + String.valueOf(forecast.main.temp) + OpenWeatherAPIUtils.OPEN_WEATHER_API_TEMP_UNIT;
+                    results.add(result);
+                    icons.add(icon);
+                }
+                mForecastAdapter.updateForecastData(results,icons);
+            }
+            else{
+                mLoadingErrorTV.setVisibility(View.VISIBLE);
+                mForecastListRV.setVisibility(View.INVISIBLE);
+            }
+            mLoadingPB.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_acitivity_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.option_map:
+                mapForecastLocation();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void mapForecastLocation(){
+        Uri intentLocation = Uri.parse("geo:0,0?q=Corvallis US");
+        Intent intent = new Intent(Intent.ACTION_VIEW, intentLocation);
+        intent.setPackage("com.google.android.apps.maps");
+        startActivity(intent);
     }
 }
